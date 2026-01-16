@@ -37,7 +37,8 @@
     "dotenv": "8.2.0",
     "readline-sync": "1.4.10",
     "colors": "1.4.0",
-    "caniuse-lite": "1.0.30001431"
+    "caniuse-lite": "1.0.30001431",
+    "spdx-license-list": "6.6.0"
   },
   "devDependencies": {
     "nodemon": "2.0.4"
