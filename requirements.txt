@@ -1,0 +1,19 @@
+# Python dependencies with known vulnerabilities
+# For Riskanator testing purposes only
+
+Django==2.2.0
+requests==2.6.0
+Flask==0.12.2
+Jinja2==2.10
+Werkzeug==0.15.3
+PyYAML==5.1
+urllib3==1.24.1
+Pillow==6.2.0
+cryptography==2.3
+paramiko==2.4.1
+SQLAlchemy==1.2.17
+lxml==4.3.0
+numpy==1.16.0
+httplib2==0.11.3
+pycrypto==2.6.1
+pyOpenSSL==17.5.0

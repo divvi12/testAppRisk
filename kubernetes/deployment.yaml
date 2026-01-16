@@ -1,0 +1,88 @@
+# VULNERABLE KUBERNETES DEPLOYMENT
+# WARNING: Contains intentional security issues for testing
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-app
+  template:
+    metadata:
+      labels:
+        app: vulnerable-app
+    spec:
+      # VULNERABILITY: Running as root
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+
+      containers:
+      - name: app
+        image: vulnerable-app:latest
+        # VULNERABILITY: No image pull policy
+        # VULNERABILITY: Using 'latest' tag
+
+        # VULNERABILITY: Running as privileged
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+          runAsNonRoot: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            add:
+              - ALL
+
+        # VULNERABILITY: Secrets in environment variables
+        env:
+        - name: DATABASE_PASSWORD
+          value: "FAKE_admin_password_123"
+        - name: API_KEY
+          value: "FAKE_api_key_for_testing"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "FAKE_aws_secret_for_testing"
+
+        # VULNERABILITY: No resource limits
+        # resources: {}
+
+        ports:
+        - containerPort: 3000
+        - containerPort: 22  # VULNERABILITY: Exposing SSH
+
+        # VULNERABILITY: Mounting host paths
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+
+      # VULNERABILITY: Mounting sensitive host paths
+      volumes:
+      - name: host-root
+        hostPath:
+          path: /
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+
+      # VULNERABILITY: No network policy
+      # VULNERABILITY: No pod security policy
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vulnerable-service
+spec:
+  type: LoadBalancer  # VULNERABILITY: Exposed to internet
+  selector:
+    app: vulnerable-app
+  ports:
+  - port: 80
+    targetPort: 3000
+  - port: 22  # VULNERABILITY: SSH exposed
+    targetPort: 22
